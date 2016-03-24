@@ -75,7 +75,7 @@ function createsubjectoption($number,$courselist)
 		var userdata = [];
 		if(logintypenum==2){
 			// userdata=JSON.parse('<?php //if ($userdata){echo json_encode($userdata);}?>')[0].userdataarray;//if type ==2 you will have user data avaialible
-			var userstring = String('<?php if ($userdata){echo json_encode($userdata);}?>');
+			var userstring = String('<?php if ($type == 2){echo json_encode($userdata);}?>');
 			userdata = userstring.substring(userstring.indexOf('\"\[\"')+3, userstring.indexOf('\"\]\"')).split('\"\,\"')
 			//alert(userstring);
 		}
