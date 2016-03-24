@@ -1,4 +1,5 @@
- <?php session_start(); ?>
+ <?php session_start(); 
+ 	$type=$_SESSION['type'];?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,8 +9,9 @@
 	<script src='./fullcalendar/lib/moment.min.js'></script>
 	<script src='./fullcalendar/fullcalendar.js'></script>
 	<script type="text/javascript">
-		var logintype=<?php echo $type;?>
+		var logintype='<?php echo $type;?>';
 		var eventarray=new Array;
+		var savearray=new Array;
         var startdate='2016-02-29';
         var enddate='2016-03-04';
 				var tempname;
@@ -383,11 +385,27 @@ function hidecontent(id)
 	}
 
 
-
+	function contains(arr, obj) {  
+    var i = arr.length;  
+    while (i--) {  
+        if (arr[i] === obj) {  
+            return true;  
+        }  
+    }  
+    return false;  
+}  
 	function save()
 	{
 		var events=eventarray;
-		for()
+		for(var i=0;i<events.length;i++)
+		{
+			if(!contains(events[i].title,savearray))
+			{
+				savearray.push(events[i].title);
+			}
+		}
+		console.log("save function called ");
+		console.log(savearray);
 	}
 </script>
 <style>
@@ -501,10 +519,10 @@ function hidecontent(id)
 <body>
 	<?php
 	$displaynumber=0;
-	$username=$_SESSION['uername'];
+	$username=$_SESSION['username'];
 	$password=$_SESSION['password'];
 	$coursearray=$_SESSION['courses'];
-	$type=$_SESSION['type'];
+
 	if($type==2)
 	{
 		$userdata=$_SESSION['userdata'];
