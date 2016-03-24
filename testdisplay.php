@@ -399,13 +399,24 @@ function hidecontent(id)
 		var events=eventarray;
 		for(var i=0;i<events.length;i++)
 		{
-			if(!contains(events[i].title,savearray))
+			if(!contains(savearray,events[i].title))
 			{
 				savearray.push(events[i].title);
 			}
 		}
 		console.log("save function called ");
 		console.log(savearray);
+		savearray=JSON.stringify(savearray);
+		$.ajax({
+        type: "POST",
+        url: "receiveuserupdate.php",
+        data:{data : savearray}, 
+        cache: false,
+
+        success: function(){
+            alert("Course saved!");
+        }
+    });
 	}
 </script>
 <style>
