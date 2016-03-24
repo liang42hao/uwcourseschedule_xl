@@ -4,14 +4,10 @@
 //www.uwcourseschedule.com/courseselect.php?type=1 means this is a new user and user data is empty, so no need  for load.
 //www.uwcourseschedule.com/courseselect.php?type=2 means this is a existed user and user data is not empty, so  need  for load.
 //www.uwcourseschedule.com/courseselect.php?type=3 means this is a guest login no need for load.(also work for display no save button)
-
-
-
-
 $type=$_GET['type'];
 		session_start();
 		$_SESSION['type']=$type;
-		echo "this time is login as type $type";
+		echo "login as type $type";
 		if($type==2)
 		{
 			$userdata=$_SESSION['userdata'];
@@ -20,7 +16,6 @@ $type=$_GET['type'];
 <html>
 
 <?php
-
 include "sql.php";
 $allcourselist=searchforcoursetyepe2("","",'allcourselist');
 //print_r($allcourselist);
@@ -38,10 +33,7 @@ for($i=0;$i<sizeof($allcourselist);$i++)
 	}
 }
 $coursenumber=6;
-
 //print_r($courselist);
-
-
 ?>
 
 
@@ -65,37 +57,63 @@ function createsubjectoption($number,$courselist)
 <head>
 	<title>Welcome to uw course schedule
 		Please choose your courses</title>
+		<style>
+			form {
+				position: fixed;
+				top: 20%;
+				left: 30%;
+				width: 40%;
+			}
+			select {
+				margin: 5px;
+			}
+		</style>
 		<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 		<script type="text/javascript">
-		var logintype=<?php echo $type;?>//this is the type for your use
+		var logintype=<?php echo json_encode($type);?>;//this is the type for your use
 		var logintypenum=parseInt(logintype);
+		var userdata = [];
 		if(logintypenum==2){
-		var userdata=JSON.parse('<?php //echo json_encode($userdata);?>');//if type ==2 you will have user data avaialible
-	}
-			var arraylist=JSON.parse('<?php echo json_encode($courselist);?>');
-			function createcatalogoption(subject,number)
+			// userdata=JSON.parse('<?php //if ($userdata){echo json_encode($userdata);}?>')[0].userdataarray;//if type ==2 you will have user data avaialible
+			var userstring = String('<?php if ($userdata){echo json_encode($userdata);}?>');
+			userdata = userstring.substring(userstring.indexOf('\"\[\"')+3, userstring.indexOf('\"\]\"')).split('\"\,\"')
+			//alert(userstring);
+		}
+		var arraylist=JSON.parse('<?php echo json_encode($courselist);?>');
+		function createcatalogoption(subject,number)
+		{
+			console.log("add clled");
+			console.log(subject);
+			console.log(number);
+			var name="catalog_number"+number;
+			var new_option;
+			console.log(name);
+			document.getElementsByName(name)[0].options.length = 0;
+			//document.getElementById(name).options.length = idarray.length;
+			console.log("length is ");
+			console.log(arraylist[subject].length);
+			var op=document.getElementsByName(name)[0].options;
+			op.add(new Option('',null,true,true))
+			for(var i =0;i<arraylist[subject].length;i++)
 			{
-				console.log("add clled");
-				console.log(subject);
-				console.log(number);
-				var name="catalog_number"+number;
-				var new_option;
-				console.log(name);
-
-				document.getElementsByName(name)[0].options.length = 0;
-    //document.getElementById(name).options.length = idarray.length;
-    console.log("length is ");
-    console.log(arraylist[subject].length);
-    for(var i =0;i<arraylist[subject].length;i++)
-    {
-    	new_option=new Option(arraylist[subject][i],arraylist[subject][i]);
-    	document.getElementsByName(name)[0].options.add(new_option);
-    }
-    var op=document.getElementsByName(name)[0].options;
-    op[0].selected=true;
-
-}
-
+				new_option=new Option(arraylist[subject][i],arraylist[subject][i]);
+				op.add(new_option);
+			}
+		}
+		function loadUserData()
+		{
+			var $j_li = $('li.courses');
+			console.log($j_li)
+			for (var i in userdata)
+			{	
+				console.log(userdata[i]);
+				var crs = userdata[i].split('\-')[0];
+				var nbr = crs.substring(crs.length-3);
+				var sbj = crs.replace(nbr,'');
+				$('select[name=subject'+ i +']').val(sbj).change();
+				$('select[name=catalog_number'+ i +']').val(nbr).change();
+			}
+		}
 </script>
 </head>
 
@@ -111,8 +129,6 @@ function createsubjectoption($number,$courselist)
 	</select>
 	<ol>
 		<?php
-
-
 		for($i=0;$i<$coursenumber;$i++)
 		{
 			?>
@@ -121,8 +137,6 @@ function createsubjectoption($number,$courselist)
 				Choose the subject:
 				<?php
 				createsubjectoption($i,$courselist);?>
-
-
 			</li>
 
 			<?php
@@ -131,7 +145,20 @@ function createsubjectoption($number,$courselist)
 	</ol>
 		<input type="submit" action="displaylist.php" value="Submit" /><br>
 	</form>
-
+	<script>
+        $(function(){
+        	if (!userdata)
+        	{
+        		$('li.courses > select').change();
+        	}
+        	else
+        	{
+        		$('li.courses > select').change();
+        		// alert('userdata'+userdata);
+        		loadUserData();
+        	}
+        });
+    </script>
 </body>
 
 </html>
